@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Editar Personal{% else %}Nuevo Registro de Personal{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- Top Navigation Breadcrumb / Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <a href="{{ url_for('staff_list') }}" class="text-xs font-semibold text-slate-500 hover:text-blue-600 transition inline-flex items-center">
+                <i class="fa-solid fa-arrow-left mr-1.5"></i>Volver al Directorio
+            </a>
+            <h1 class="text-2xl font-bold text-slate-900 mt-1">
+                {% if is_edit %}
+                    Editar Datos del Trabajador
+                {% else %}
+                    Registro de Nuevo Personal
+                {% endif %}
+            </h1>
+            <p class="text-xs text-slate-500">
+                Escuela Alberto Sanabria • Ministerio del Poder Popular para la Educación (MPPE)
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Registration Form -->
+    <form method="POST" class="space-y-6">
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 1: DATOS PERSONALES Y DE IDENTIDAD -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">1</span>
+                    <h2 class="text-base font-bold text-slate-800">Datos Personales y de Identidad</h2>
+                </div>
+                <span class="text-xs text-slate-400 font-medium">* Campos obligatorios</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Cédula de Identidad -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Cédula de Identidad <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="flex">
+                        <select name="nationality" class="w-16 py-2 px-2 text-xs font-bold rounded-l-xl border border-r-0 border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="V" {% if form_data.get('nationality', 'V') == 'V' %}selected{% endif %}>V-</option>
+                            <option value="E" {% if form_data.get('nationality') == 'E' %}selected{% endif %}>E-</option>
+                        </select>
+                        <input type="text" name="id_number" required value="{{ form_data.get('id_number', '') }}" placeholder="Ej: 14258963"
+                               class="w-full py-2 px-3 text-xs rounded-r-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                </div>
+
+                <!-- Nombres -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Nombres <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="first_name" required value="{{ form_data.get('first_name', '') }}" placeholder="Ej: María Elena"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Apellidos -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Apellidos <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="last_name" required value="{{ form_data.get('last_name', '') }}" placeholder="Ej: Paredes Rivas"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Sexo -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Sexo / Género</label>
+                    <select name="gender" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="">Seleccione...</option>
+                        <option value="Femenino" {% if form_data.get('gender') == 'Femenino' %}selected{% endif %}>Femenino</option>
+                        <option value="Masculino" {% if form_data.get('gender') == 'Masculino' %}selected{% endif %}>Masculino</option>
+                        <option value="Otro" {% if form_data.get('gender') == 'Otro' %}selected{% endif %}>Otro</option>
+                    </select>
+                </div>
+
+                <!-- Fecha de Nacimiento -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Fecha de Nacimiento</label>
+                    <input type="date" name="birth_date" value="{{ form_data.get('birth_date', '') }}"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Teléfono -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Teléfono Móvil / Fijo</label>
+                    <input type="tel" name="phone" value="{{ form_data.get('phone', '') }}" placeholder="Ej: 0414-1234567"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Correo Electrónico -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Correo Electrónico</label>
+                    <input type="email" name="email" value="{{ form_data.get('email', '') }}" placeholder="nombre@correo.com"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Dirección de Domicilio -->
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Dirección de Habitación</label>
+                    <input type="text" name="address" value="{{ form_data.get('address', '') }}" placeholder="Calle, sector, número de casa, punto de referencia"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 2: DATOS LABORALES MPPE            -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">2</span>
+                    <h2 class="text-base font-bold text-slate-800">Datos Laborales e Institucionales (MPPE)</h2>
+                </div>
+                <span class="text-xs text-indigo-700 font-semibold bg-indigo-50 px-2 py-0.5 rounded-full">Ministerio de Educación</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Tipo de Personal (Docente, Administrativo, Obrero) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Tipo de Personal <span class="text-rose-500">*</span>
+                    </label>
+                    <select name="category" required class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold bg-white">
+                        <option value="Docente" {% if form_data.get('category') == 'Docente' %}selected{% endif %}>Docente</option>
+                        <option value="Administrativo" {% if form_data.get('category') == 'Administrativo' %}selected{% endif %}>Administrativo</option>
+                        <option value="Obrero / Apoyo" {% if form_data.get('category') == 'Obrero / Apoyo' %}selected{% endif %}>Obrero / Apoyo</option>
+                    </select>
+                </div>
+
+                <!-- Cargo o Función desempeñada -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Cargo o Función <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="position" required value="{{ form_data.get('position', '') }}" placeholder="Ej: Docente de Aula, Secretaria, Aseador"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Condición Laboral -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Condición Laboral</label>
+                    <select name="employment_condition" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="Fijo / Titular" {% if form_data.get('employment_condition', 'Fijo / Titular') == 'Fijo / Titular' %}selected{% endif %}>Fijo / Titular</option>
+                        <option value="Contratado" {% if form_data.get('employment_condition') == 'Contratado' %}selected{% endif %}>Contratado</option>
+                        <option value="Interino" {% if form_data.get('employment_condition') == 'Interino' %}selected{% endif %}>Interino</option>
+                        <option value="Suplente" {% if form_data.get('employment_condition') == 'Suplente' %}selected{% endif %}>Suplente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Fecha de Ingreso al MPPE -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
+                        <span>Ingreso al MPPE <span class="text-rose-500">*</span></span>
+                        <span id="yearsBadge" class="text-blue-600 font-bold text-[11px]"></span>
+                    </label>
+                    <input type="date" id="mppe_entry_date" name="mppe_entry_date" required value="{{ form_data.get('mppe_entry_date', '') }}"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-[10px] text-slate-400 mt-0.5">Fecha oficial de ingreso al Ministerio</p>
+                </div>
+
+                <!-- Fecha de Ingreso a este Plantel -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Ingreso a la Escuela</label>
+                    <input type="date" name="school_entry_date" value="{{ form_data.get('school_entry_date', '') }}"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-[10px] text-slate-400 mt-0.5">Fecha de llegada al plantel Alberto Sanabria</p>
+                </div>
+
+                <!-- Turno de Trabajo -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Turno</label>
+                    <select name="shift" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="Mañana" {% if form_data.get('shift', 'Mañana') == 'Mañana' %}selected{% endif %}>Mañana</option>
+                        <option value="Tarde" {% if form_data.get('shift') == 'Tarde' %}selected{% endif %}>Tarde</option>
+                        <option value="Integral / Doble turno" {% if form_data.get('shift') == 'Integral / Doble turno' %}selected{% endif %}>Integral / Doble turno</option>
+                        <option value="Nocturno" {% if form_data.get('shift') == 'Nocturno' %}selected{% endif %}>Nocturno</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Grado / Sección o Área Asignada -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Área o Grado Asignado</label>
+                    <input type="text" name="assigned_area" value="{{ form_data.get('assigned_area', '') }}" placeholder="Ej: 2do Grado 'B', Mantenimiento Aulas, Control de Estudio"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Estatus Laboral Actual -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Estatus Actual</label>
+                    <select name="status" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium">
+                        <option value="Activo" {% if form_data.get('status', 'Activo') == 'Activo' %}selected{% endif %}>Activo</option>
+                        <option value="Reposo Médico" {% if form_data.get('status') == 'Reposo Médico' %}selected{% endif %}>Reposo Médico</option>
+                        <option value="Permiso" {% if form_data.get('status') == 'Permiso' %}selected{% endif %}>Permiso</option>
+                        <option value="Comisión de Servicio" {% if form_data.get('status') == 'Comisión de Servicio' %}selected{% endif %}>Comisión de Servicio</option>
+                        <option value="Jubilado" {% if form_data.get('status') == 'Jubilado' %}selected{% endif %}>Jubilado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 3: FORMACIÓN ACADÉMICA             -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex items-center space-x-2">
+                <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">3</span>
+                <h2 class="text-base font-bold text-slate-800">Nivel Académico y Titulación</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Nivel de Instrucción -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nivel de Instrucción</label>
+                    <select name="education_level" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="">Seleccione...</option>
+                        <option value="Bachiller" {% if form_data.get('education_level') == 'Bachiller' %}selected{% endif %}>Bachiller</option>
+                        <option value="Técnico Medio" {% if form_data.get('education_level') == 'Técnico Medio' %}selected{% endif %}>Técnico Medio</option>
+                        <option value="T.S.U." {% if form_data.get('education_level') == 'T.S.U.' %}selected{% endif %}>Técnico Superior Universitario (T.S.U.)</option>
+                        <option value="Licenciatura" {% if form_data.get('education_level') == 'Licenciatura' %}selected{% endif %}>Licenciatura / Profesor</option>
+                        <option value="Especialización" {% if form_data.get('education_level') == 'Especialización' %}selected{% endif %}>Especialización</option>
+                        <option value="Maestría" {% if form_data.get('education_level') == 'Maestría' %}selected{% endif %}>Maestría / Magíster</option>
+                        <option value="Doctorado" {% if form_data.get('education_level') == 'Doctorado' %}selected{% endif %}>Doctorado</option>
+                    </select>
+                </div>
+
+                <!-- Título o Especialidad -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Especialidad / Mención / Título</label>
+                    <input type="text" name="specialization" value="{{ form_data.get('specialization', '') }}" placeholder="Ej: Educación Integral, Recursos Humanos, Matemática, Electricidad"
+                           class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 4: CURSOS Y TALLERES REALIZADOS    -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="flex items-center space-x-2">
+                    <span class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold">4</span>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800">Cursos y Formaciones Realizadas</h2>
+                        <p class="text-[11px] text-slate-500">Añada todos los cursos, talleres, diplomados o formaciones completadas</p>
+                    </div>
+                </div>
+                <button type="button" id="addCourseBtn" class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold text-purple-800 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition shadow-sm">
+                    <i class="fa-solid fa-plus mr-1.5"></i>Agregar Otro Curso
+                </button>
+            </div>
+
+            <!-- Dynamic Courses Container -->
+            <div id="coursesContainer" class="space-y-3">
+                {% for course in courses %}
+                <div class="course-card bg-slate-50 p-4 rounded-xl border border-slate-200 relative space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-purple-700 course-index">#{{ loop.index }}</span>
+                        <button type="button" class="remove-course-btn text-rose-500 hover:text-rose-700 text-xs font-semibold p-1 hover:bg-rose-50 rounded transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i>Quitar
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Nombre del Curso / Taller / Diplomado *</label>
+                            <input type="text" name="course_name[]" value="{{ course.course_name }}" required placeholder="Ej: Estrategias de Lectura y Escritura, Manipulación de Alimentos, etc."
+                                   class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Institución / Ente Emisor</label>
+                            <input type="text" name="course_institution[]" value="{{ course.institution or '' }}" placeholder="Ej: CENAMEC, UNEM, INCES, MPPE"
+                                   class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Horas Académicas</label>
+                            <input type="number" name="course_hours[]" value="{{ course.hours or '' }}" placeholder="Ej: 40, 120" min="1"
+                                   class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Año de Culminación</label>
+                            <input type="number" name="course_year[]" value="{{ course.year_completed or '' }}" placeholder="Ej: 2023" min="1970" max="2030"
+                                   class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Modalidad</label>
+                            <select name="course_modality[]" class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                                <option value="Presencial" {% if course.modality == 'Presencial' %}selected{% endif %}>Presencial</option>
+                                <option value="En línea / Virtual" {% if course.modality == 'En línea / Virtual' %}selected{% endif %}>En línea / Virtual</option>
+                                <option value="Mixto" {% if course.modality == 'Mixto' %}selected{% endif %}>Mixto</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Nº de Certificado o Folio (Opcional)</label>
+                            <input type="text" name="course_cert[]" value="{{ course.certificate_code or '' }}" placeholder="Ej: FOLIO-2023-998"
+                                   class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Empty message if no courses -->
+            <div id="noCoursesMessage" class="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl {% if courses %}hidden{% endif %}">
+                <i class="fa-solid fa-award text-slate-300 text-3xl mb-2"></i>
+                <p class="text-xs font-semibold text-slate-500">No hay cursos añadidos todavía.</p>
+                <p class="text-[11px] text-slate-400">Haga clic en "+ Agregar Otro Curso" para registrar formaciones.</p>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 5: OBSERVACIONES GENERALES         -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 pb-3 flex items-center space-x-2">
+                <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">5</span>
+                <h2 class="text-base font-bold text-slate-800">Observaciones Generales</h2>
+            </div>
+            <div>
+                <textarea name="notes" rows="3" placeholder="Información adicional sobre comisiones de servicio, reconocimientos institucionales, antecedentes o notas pedagógicas..."
+                          class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ form_data.get('notes', '') }}</textarea>
+            </div>
+        </div>
+
+        <!-- Bottom Actions -->
+        <div class="flex items-center justify-end space-x-3 pt-2">
+            <a href="{{ url_for('staff_list') }}" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                Cancelar
+            </a>
+            <button type="submit" class="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 transition flex items-center">
+                <i class="fa-solid fa-floppy-disk mr-2"></i>
+                <span>{% if is_edit %}Guardar Cambios{% else %}Guardar y Registrar Trabajador{% endif %}</span>
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- Template for adding dynamic course rows via JS -->
+<template id="courseRowTemplate">
+    <div class="course-card bg-slate-50 p-4 rounded-xl border border-slate-200 relative space-y-3">
+        <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-purple-700 course-index">#1</span>
+            <button type="button" class="remove-course-btn text-rose-500 hover:text-rose-700 text-xs font-semibold p-1 hover:bg-rose-50 rounded transition">
+                <i class="fa-solid fa-trash-can mr-1"></i>Quitar
+            </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="sm:col-span-2">
+                <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Nombre del Curso / Taller / Diplomado *</label>
+                <input type="text" name="course_name[]" required placeholder="Ej: Estrategias de Lectura y Escritura, Manipulación de Alimentos, etc."
+                       class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Institución / Ente Emisor</label>
+                <input type="text" name="course_institution[]" placeholder="Ej: CENAMEC, UNEM, INCES, MPPE"
+                       class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Horas Académicas</label>
+                <input type="number" name="course_hours[]" placeholder="Ej: 40, 120" min="1"
+                       class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Año de Culminación</label>
+                <input type="number" name="course_year[]" placeholder="Ej: 2023" min="1970" max="2030"
+                       class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Modalidad</label>
+                <select name="course_modality[]" class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+                    <option value="Presencial">Presencial</option>
+                    <option value="En línea / Virtual">En línea / Virtual</option>
+                    <option value="Mixto">Mixto</option>
+                </select>
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-[11px] font-bold text-slate-600 mb-0.5">Nº de Certificado o Folio (Opcional)</label>
+                <input type="text" name="course_cert[]" placeholder="Ej: FOLIO-2023-998"
+                       class="w-full py-1.5 px-3 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}

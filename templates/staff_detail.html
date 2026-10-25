@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}{{ staff.first_name }} {{ staff.last_name }} - Ficha de Personal{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- Top Navigation and Quick Actions -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <a href="{{ url_for('staff_list') }}" class="text-xs font-semibold text-slate-500 hover:text-blue-600 transition inline-flex items-center">
+                <i class="fa-solid fa-arrow-left mr-1.5"></i>Volver al Directorio
+            </a>
+            <h1 class="text-2xl font-bold text-slate-900 mt-1">Ficha del Trabajador</h1>
+            <p class="text-xs text-slate-500">Escuela Alberto Sanabria • Expediente Laboral MPPE</p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <a href="{{ url_for('staff_ficha_print', staff_id=staff.id) }}" target="_blank"
+               class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-sm transition">
+                <i class="fa-solid fa-print mr-1.5 text-indigo-600"></i>
+                <span>Imprimir Ficha Oficial MPPE</span>
+            </a>
+            <a href="{{ url_for('staff_edit', staff_id=staff.id) }}" 
+               class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition">
+                <i class="fa-solid fa-pen-to-square mr-1.5"></i>
+                <span>Editar Datos</span>
+            </a>
+            <form action="{{ url_for('staff_delete', staff_id=staff.id) }}" method="POST" class="inline">
+                <button type="submit" data-name="{{ staff.first_name }} {{ staff.last_name }}" class="delete-confirm-btn inline-flex items-center p-2 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 transition" title="Eliminar">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Profile Card -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+            <div class="flex items-center space-x-4">
+                <!-- Avatar circle with initials -->
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-md shadow-blue-500/20">
+                    {{ staff.first_name[0] }}{{ staff.last_name[0] }}
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">{{ staff.first_name }} {{ staff.last_name }}</h2>
+                        {% if staff.status == 'Activo' %}
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold badge-activo">Activo</span>
+                        {% else %}
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold badge-reposo">{{ staff.status }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                        <span class="text-sm font-semibold text-slate-600">C.I. {{ staff.nationality }}-{{ staff.id_number }}</span>
+                        <span class="text-slate-300">•</span>
+                        <span class="text-sm font-bold text-blue-700">{{ staff.position }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category badge -->
+            <div>
+                {% if staff.category == 'Docente' %}
+                    <span class="px-3 py-1.5 rounded-xl text-xs font-bold badge-docente inline-flex items-center">
+                        <i class="fa-solid fa-chalkboard-user mr-1.5"></i>Personal Docente
+                    </span>
+                {% elif staff.category == 'Administrativo' %}
+                    <span class="px-3 py-1.5 rounded-xl text-xs font-bold badge-administrativo inline-flex items-center">
+                        <i class="fa-solid fa-clipboard-user mr-1.5"></i>Personal Administrativo
+                    </span>
+                {% else %}
+                    <span class="px-3 py-1.5 rounded-xl text-xs font-bold badge-obrero inline-flex items-center">
+                        <i class="fa-solid fa-broom mr-1.5"></i>Personal Obrero / Apoyo
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 3 Highlights counters -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-b border-slate-100">
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Años de Servicio MPPE</span>
+                <span class="text-lg font-extrabold text-blue-700 mt-0.5 block">{{ staff.years_of_service }} Años</span>
+                <span class="text-[11px] text-slate-500">Ingreso: {{ staff.mppe_entry_date }}</span>
+            </div>
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Condición Laboral</span>
+                <span class="text-lg font-extrabold text-slate-800 mt-0.5 block">{{ staff.employment_condition }}</span>
+                <span class="text-[11px] text-slate-500">Turno: {{ staff.shift }}</span>
+            </div>
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cursos Realizados</span>
+                <span class="text-lg font-extrabold text-purple-700 mt-0.5 block">{{ staff.courses|length }} Cursos</span>
+                <span class="text-[11px] text-slate-500">Acreditaciones</span>
+            </div>
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Edad Calculada</span>
+                <span class="text-lg font-extrabold text-slate-800 mt-0.5 block">{{ staff.age if staff.age > 0 else 'N/D' }} Años</span>
+                <span class="text-[11px] text-slate-500">{{ staff.birth_date or 'No indicada' }}</span>
+            </div>
+        </div>
+
+        <!-- Detailed Information Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+
+            <!-- Col 1: Datos Personales y Contacto -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center">
+                    <i class="fa-solid fa-address-card text-blue-600 mr-2"></i>Datos Personales y Contacto
+                </h3>
+                <dl class="divide-y divide-slate-100 text-xs">
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Cédula de Identidad:</dt>
+                        <dd class="col-span-2 text-slate-800 font-bold">{{ staff.nationality }}-{{ staff.id_number }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Sexo / Género:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.gender or 'No especificado' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Fecha de Nacimiento:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.birth_date or 'No registrada' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Teléfono:</dt>
+                        <dd class="col-span-2 text-slate-800 font-medium">{{ staff.phone or 'No registrado' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Correo Electrónico:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.email or 'No registrado' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Dirección:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.address or 'No registrada' }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- Col 2: Datos Institucionales y Académicos -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center">
+                    <i class="fa-solid fa-building-columns text-indigo-600 mr-2"></i>Información Institucional MPPE
+                </h3>
+                <dl class="divide-y divide-slate-100 text-xs">
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Ingreso al MPPE:</dt>
+                        <dd class="col-span-2 text-slate-800 font-bold">{{ staff.mppe_entry_date }} ({{ staff.years_of_service }} años de servicio)</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Ingreso a la Escuela:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.school_entry_date or 'No registrada' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Área / Asignación:</dt>
+                        <dd class="col-span-2 text-slate-800 font-medium">{{ staff.assigned_area or 'No asignada' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Nivel Académico:</dt>
+                        <dd class="col-span-2 text-slate-800 font-semibold">{{ staff.education_level or 'No indicado' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Especialidad / Título:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.specialization or 'No indicada' }}</dd>
+                    </div>
+                    <div class="py-2.5 grid grid-cols-3">
+                        <dt class="font-semibold text-slate-500">Estatus Laboral:</dt>
+                        <dd class="col-span-2 text-slate-800">{{ staff.status }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        {% if staff.notes %}
+        <div class="mt-6 pt-4 border-t border-slate-100">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Observaciones Institucionales</h4>
+            <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed">{{ staff.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Courses & Training Section -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-certificate"></i>
+                </span>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Historial de Cursos y Formaciones Realizadas</h3>
+                    <p class="text-xs text-slate-500">Talleres, seminarios y acreditaciones profesionales</p>
+                </div>
+            </div>
+            <a href="{{ url_for('staff_edit', staff_id=staff.id) }}" class="text-xs font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-plus mr-1"></i>Gestionar Cursos
+            </a>
+        </div>
+
+        {% if staff.courses %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for c in staff.courses %}
+            <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-purple-200 transition space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                    <h4 class="text-xs font-bold text-slate-900 leading-snug">{{ c.course_name }}</h4>
+                    {% if c.year_completed %}
+                    <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
+                        {{ c.year_completed }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
+                    {% if c.institution %}
+                    <span><i class="fa-solid fa-building mr-1 text-slate-400"></i>{{ c.institution }}</span>
+                    {% endif %}
+                    {% if c.hours %}
+                    <span><i class="fa-solid fa-clock mr-1 text-slate-400"></i>{{ c.hours }} horas</span>
+                    {% endif %}
+                    {% if c.modality %}
+                    <span><i class="fa-solid fa-laptop-file mr-1 text-slate-400"></i>{{ c.modality }}</span>
+                    {% endif %}
+                </div>
+                {% if c.certificate_code %}
+                <div class="pt-1 text-[10px] text-slate-400 font-mono">
+                    Certificado / Folio: <span class="font-semibold text-slate-600">{{ c.certificate_code }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl">
+            <i class="fa-solid fa-award text-3xl text-slate-300 mb-2"></i>
+            <p class="text-xs font-semibold text-slate-500">No hay cursos o formaciones registradas para este trabajador.</p>
+            <p class="text-[11px] text-slate-400 mt-1">Puede agregarlos en cualquier momento editando la ficha.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

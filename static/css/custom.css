@@ -1,0 +1,83 @@
+/* Custom CSS styles for Escuela Alberto Sanabria Staff Management System */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+/* Venezuelan institutional color bar */
+.venezuela-stripe {
+    height: 4px;
+    background: linear-gradient(90deg, #facc15 0%, #facc15 33%, #1e40af 33%, #1e40af 66%, #dc2626 66%, #dc2626 100%);
+}
+
+/* Category Badges */
+.badge-docente {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.badge-administrativo {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.badge-obrero {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.badge-activo {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badge-reposo {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Printable Ficha Styling */
+@media print {
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+
+    .ficha-container {
+        box-shadow: none !important;
+        border: 1px solid #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    @page {
+        margin: 1.5cm;
+        size: letter portrait;
+    }
+}
+
+/* Form Repeater Transitions */
+.course-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.course-card:hover {
+    border-color: #93c5fd;
+}

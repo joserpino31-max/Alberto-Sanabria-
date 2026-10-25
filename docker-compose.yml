@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    container_name: escuela_alberto_sanabria
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist SQLite database on host machine
+      - ./escuela_sanabria.db:/app/escuela_sanabria.db
+    environment:
+      - PORT=5000

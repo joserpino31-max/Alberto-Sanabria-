@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Oficial - {{ staff.first_name }} {{ staff.last_name }} ({{ staff.nationality }}-{{ staff.id_number }})</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #111827;
+            padding: 20px;
+            font-size: 11pt;
+            line-height: 1.4;
+        }
+
+        .action-bar {
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-print {
+            background-color: #1d4ed8;
+            color: #fff;
+            border-color: #1d4ed8;
+        }
+
+        .btn-back {
+            background-color: #fff;
+            color: #374151;
+        }
+
+        .ficha-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 40px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-mppe {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .header-mppe h4 {
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-mppe h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+
+        .header-mppe h2 {
+            font-size: 14pt;
+            font-weight: 800;
+            margin-top: 5px;
+            text-decoration: underline;
+        }
+
+        .ficha-title {
+            text-align: center;
+            background-color: #f1f5f9;
+            padding: 6px;
+            font-weight: bold;
+            font-size: 12pt;
+            text-transform: uppercase;
+            border: 1px solid #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .section-box {
+            margin-bottom: 16px;
+            border: 1px solid #94a3b8;
+        }
+
+        .section-title {
+            background-color: #e2e8f0;
+            padding: 4px 8px;
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #94a3b8;
+        }
+
+        .table-data {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+
+        .table-data td, .table-data th {
+            padding: 5px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .table-data tr:last-child td {
+            border-bottom: none;
+        }
+
+        .lbl {
+            font-weight: bold;
+            color: #334155;
+            width: 25%;
+            background-color: #f8fafc;
+        }
+
+        .val {
+            color: #0f172a;
+            width: 25%;
+        }
+
+        .table-courses {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+        }
+
+        .table-courses th {
+            background-color: #f1f5f9;
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #94a3b8;
+            border-right: 1px solid #cbd5e1;
+            font-size: 9pt;
+            text-transform: uppercase;
+        }
+
+        .table-courses td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #cbd5e1;
+            border-right: 1px solid #cbd5e1;
+        }
+
+        .table-courses tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-courses td:last-child, .table-courses th:last-child {
+            border-right: none;
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            padding-top: 10px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 80%;
+            margin: 45px auto 6px auto;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .signature-role {
+            font-size: 9pt;
+            color: #475569;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .action-bar {
+                display: none !important;
+            }
+            .ficha-container {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            .lbl {
+                background-color: transparent !important;
+            }
+            .section-title {
+                background-color: #e5e7eb !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .ficha-title {
+                background-color: #f3f4f6 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            @page {
+                size: letter portrait;
+                margin: 1.2cm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Action bar with Print and Back buttons (hidden when printing) -->
+    <div class="action-bar">
+        <a href="{{ url_for('staff_detail', staff_id=staff.id) }}" class="btn btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Volver a la Ficha
+        </a>
+        <button onclick="window.print()" class="btn btn-print">
+            <i class="fa-solid fa-print"></i> Imprimir Ficha Oficial (Ctrl + P)
+        </button>
+    </div>
+
+    <!-- Main Printable Sheet -->
+    <div class="ficha-container">
+
+        <!-- MPPE Official Header -->
+        <div class="header-mppe">
+            <h4>República Bolivariana de Venezuela</h4>
+            <h4>Ministerio del Poder Popular para la Educación</h4>
+            <h3>ESCUELA "ALBERTO SANABRIA"</h3>
+            <h2>FICHA DE REGISTRO INTEGRAL DEL PERSONAL</h2>
+            <div style="font-size: 9pt; margin-top: 4px; font-weight: bold; color: #1e3a8a;">
+                CATEGORÍA: PERSONAL {{ staff.category|upper }} • ESTATUS: {{ staff.status|upper }}
+            </div>
+        </div>
+
+        <!-- Section 1: Datos Personales -->
+        <div class="section-box">
+            <div class="section-title">I. Datos de Identificación y Personales</div>
+            <table class="table-data">
+                <tr>
+                    <td class="lbl">Cédula de Identidad:</td>
+                    <td class="val"><strong>{{ staff.nationality }}-{{ staff.id_number }}</strong></td>
+                    <td class="lbl">Sexo / Género:</td>
+                    <td class="val">{{ staff.gender or 'No especificado' }}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Apellidos Completos:</td>
+                    <td class="val"><strong>{{ staff.last_name }}</strong></td>
+                    <td class="lbl">Nombres Completos:</td>
+                    <td class="val"><strong>{{ staff.first_name }}</strong></td>
+                </tr>
+                <tr>
+                    <td class="lbl">Fecha de Nacimiento:</td>
+                    <td class="val">{{ staff.birth_date or 'No registrada' }}</td>
+                    <td class="lbl">Edad Actual:</td>
+                    <td class="val">{{ staff.age if staff.age > 0 else 'N/D' }} años</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Teléfono de Contacto:</td>
+                    <td class="val">{{ staff.phone or 'No registrado' }}</td>
+                    <td class="lbl">Correo Electrónico:</td>
+                    <td class="val">{{ staff.email or 'No registrado' }}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Dirección de Domicilio:</td>
+                    <td class="val" colspan="3">{{ staff.address or 'No registrada' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Section 2: Datos Laborales MPPE -->
+        <div class="section-box">
+            <div class="section-title">II. Información Laboral e Institucional MPPE</div>
+            <table class="table-data">
+                <tr>
+                    <td class="lbl">Tipo de Personal:</td>
+                    <td class="val"><strong>{{ staff.category }}</strong></td>
+                    <td class="lbl">Condición Laboral:</td>
+                    <td class="val"><strong>{{ staff.employment_condition }}</strong></td>
+                </tr>
+                <tr>
+                    <td class="lbl">Cargo / Función:</td>
+                    <td class="val" colspan="3"><strong>{{ staff.position }}</strong></td>
+                </tr>
+                <tr>
+                    <td class="lbl">Fecha Ingreso al MPPE:</td>
+                    <td class="val"><strong>{{ staff.mppe_entry_date }}</strong></td>
+                    <td class="lbl">Años de Servicio MPPE:</td>
+                    <td class="val"><strong>{{ staff.years_of_service }} Años</strong></td>
+                </tr>
+                <tr>
+                    <td class="lbl">Ingreso a este Plantel:</td>
+                    <td class="val">{{ staff.school_entry_date or 'No registrada' }}</td>
+                    <td class="lbl">Turno de Desempeño:</td>
+                    <td class="val">{{ staff.shift }}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Grado / Área Asignada:</td>
+                    <td class="val" colspan="3">{{ staff.assigned_area or 'No asignada' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Section 3: Nivel Académico -->
+        <div class="section-box">
+            <div class="section-title">III. Nivel Académico y Formación de Base</div>
+            <table class="table-data">
+                <tr>
+                    <td class="lbl">Nivel de Instrucción:</td>
+                    <td class="val"><strong>{{ staff.education_level or 'No indicado' }}</strong></td>
+                    <td class="lbl">Especialidad / Mención:</td>
+                    <td class="val">{{ staff.specialization or 'No indicada' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Section 4: Cursos y Formaciones -->
+        <div class="section-box">
+            <div class="section-title">IV. Cursos, Diplomados y Talleres Realizados (Acreditaciones)</div>
+            {% if staff.courses %}
+            <table class="table-courses">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 40%;">Nombre del Curso / Formación</th>
+                        <th style="width: 25%;">Institución Emisora</th>
+                        <th style="width: 10%;">Horas</th>
+                        <th style="width: 10%;">Año</th>
+                        <th style="width: 10%;">Modalidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in staff.courses %}
+                    <tr>
+                        <td style="text-align: center; font-weight: bold;">{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ c.course_name }}</strong>
+                            {% if c.certificate_code %}
+                            <div style="font-size: 8pt; color: #555;">Cert: {{ c.certificate_code }}</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.institution or 'N/D' }}</td>
+                        <td>{{ c.hours or '-' }}</td>
+                        <td>{{ c.year_completed or '-' }}</td>
+                        <td>{{ c.modality or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="padding: 10px; font-size: 9.5pt; color: #64748b; text-align: center; font-style: italic;">
+                No registra cursos o talleres adicionales al momento de esta emisión.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Section 5: Observaciones -->
+        {% if staff.notes %}
+        <div class="section-box">
+            <div class="section-title">V. Observaciones Institucionales</div>
+            <div style="padding: 8px 10px; font-size: 9.5pt; line-height: 1.4;">
+                {{ staff.notes }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Signatures & Seals -->
+        <div class="signatures-grid">
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-name">{{ staff.first_name }} {{ staff.last_name }}</div>
+                <div class="signature-role">C.I. {{ staff.nationality }}-{{ staff.id_number }}<br>Firma del Trabajador</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-name">Dirección del Plantel</div>
+                <div class="signature-role">Escuela "Alberto Sanabria"<br>Firma y Sello Oficial MPPE</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; font-size: 8pt; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 6px;">
+            Documento emitido electrónicamente por el Sistema de Personal de la Escuela Alberto Sanabria (MPPE) • Fecha de emisión: {{ current_year }}
+        </div>
+
+    </div>
+
+</body>
+</html>

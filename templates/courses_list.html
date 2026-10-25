@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Catálogo de Cursos y Formaciones{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header & Action Row -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <h1 class="text-2xl font-bold text-slate-900">Cursos y Formaciones del Personal</h1>
+                <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                    {{ total_courses }} formaciones
+                </span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">
+                Registro de diplomados, talleres, cursos de actualización y acreditaciones del personal de la Escuela Alberto Sanabria
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="{{ url_for('export_courses') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition shadow-sm">
+                <i class="fa-solid fa-file-excel mr-1.5 text-emerald-600 text-sm"></i>
+                <span>Descargar en Excel (.csv)</span>
+            </a>
+            <a href="{{ url_for('staff_list') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 transition">
+                <i class="fa-solid fa-users mr-1.5"></i>
+                <span>Ver Personal</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <form method="GET" action="{{ url_for('courses_list') }}" class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-grow">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Buscar por nombre del curso, trabajador, cédula o institución..."
+                       class="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                Buscar Formaciones
+            </button>
+            {% if search_query %}
+            <a href="{{ url_for('courses_list') }}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold flex items-center justify-center transition">
+                Limpiar
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Courses Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+                <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
+                    <tr>
+                        <th class="px-5 py-3.5">Nombre de la Formación / Curso</th>
+                        <th class="px-5 py-3.5">Trabajador Titular</th>
+                        <th class="px-5 py-3.5">Tipo</th>
+                        <th class="px-5 py-3.5">Institución / Ente</th>
+                        <th class="px-5 py-3.5">Horas</th>
+                        <th class="px-5 py-3.5">Año</th>
+                        <th class="px-5 py-3.5">Modalidad</th>
+                        <th class="px-5 py-3.5">Certificado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-normal">
+                    {% for c in courses %}
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <!-- Course Name -->
+                        <td class="px-5 py-4">
+                            <div class="font-bold text-slate-900 leading-snug">{{ c.course_name }}</div>
+                        </td>
+                        <!-- Staff Member -->
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <a href="{{ url_for('staff_detail', staff_id=c.staff_id) }}" class="font-semibold text-blue-700 hover:underline block">
+                                {{ c.first_name }} {{ c.last_name }}
+                            </a>
+                            <span class="text-xs text-slate-400 font-mono">C.I. {{ c.nationality }}-{{ c.id_number }}</span>
+                        </td>
+                        <!-- Category -->
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            {% if c.category == 'Docente' %}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold badge-docente">Docente</span>
+                            {% elif c.category == 'Administrativo' %}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold badge-administrativo">Administrativo</span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold badge-obrero">Obrero / Apoyo</span>
+                            {% endif %}
+                        </td>
+                        <!-- Institution -->
+                        <td class="px-5 py-4">
+                            <span class="text-xs text-slate-700 font-medium">{{ c.institution or 'No especificada' }}</span>
+                        </td>
+                        <!-- Hours -->
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            {% if c.hours %}
+                                <span class="text-xs font-bold text-slate-700">{{ c.hours }} hrs</span>
+                            {% else %}
+                                <span class="text-xs text-slate-400">-</span>
+                            {% endif %}
+                        </td>
+                        <!-- Year -->
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            {% if c.year_completed %}
+                                <span class="bg-slate-100 text-slate-700 font-bold text-xs px-2 py-0.5 rounded-md">
+                                    {{ c.year_completed }}
+                                </span>
+                            {% else %}
+                                <span class="text-xs text-slate-400">-</span>
+                            {% endif %}
+                        </td>
+                        <!-- Modality -->
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            <span class="text-xs text-slate-600">{{ c.modality or 'Presencial' }}</span>
+                        </td>
+                        <!-- Certificate -->
+                        <td class="px-5 py-4 whitespace-nowrap">
+                            {% if c.certificate_code %}
+                                <span class="font-mono text-[11px] text-slate-700 bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-200">
+                                    {{ c.certificate_code }}
+                                </span>
+                            {% else %}
+                                <span class="text-xs text-slate-400">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="px-5 py-12 text-center text-slate-400">
+                            <i class="fa-solid fa-award text-4xl mb-3 block opacity-30"></i>
+                            <p class="text-sm font-semibold text-slate-600">No se encontraron cursos que coincidan con la búsqueda.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
